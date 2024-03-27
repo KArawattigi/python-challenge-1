@@ -108,15 +108,16 @@ while place_order:
             i = 1
             #menu_items is reinitalzed for the sub menu 
             menu_items = {} 
+            print("-------+--------------------------+-------")
             print("Item # | Item name                | Price")
-            print("-------|--------------------------|-------")
+            print("-------+--------------------------+-------")
             for key, value in menu[menu_category_name].items():
                 # Check if the menu item is a dictionary to handle differently
                 if type(value) is dict:
                     for key2, value2 in value.items():
                         num_item_spaces = 24 - len(key + key2) - 3
                         item_spaces = " " * num_item_spaces
-                        print(f"{i}      | {key} - {key2}{item_spaces} | ${value2}")
+                        print(f"{' '*(5-len(str(i)))}{i}  | {key} - {key2}{item_spaces} |{' '*(5-len(str(value2)))}${value2} ")
                         menu_items[i] = {
                             ITEMNAME: key + " - " + key2,
                             PRICE: value2
@@ -125,12 +126,13 @@ while place_order:
                 else:
                     num_item_spaces = 24 - len(key)
                     item_spaces = " " * num_item_spaces
-                    print(f"{i}      | {key}{item_spaces} | ${value}")
+                    print(f"{' '*(5-len(str(i)))}{i}  | {key}{item_spaces} |{' '*(5-len(str(value)))}${value}")
                     menu_items[i] = {
                         ITEMNAME: key,
                         PRICE: value
                     }
                     i += 1
+            print("-------+--------------------------+-------")
             # 2. Ask customer to input menu item number
             menu_selection = input("Type menu item number: ")
 
@@ -195,11 +197,9 @@ while place_order:
             elif keep_ordering.upper()=="N":
                 # Exit the keep ordering question loop
                 # Complete the order
+                                
+                place_order=False            
                 
-                place_order=False
-                # Since the customer decided to stop ordering, thank them for
-                    # their order
-                print("Thank you for ordering from the variety food truck.")
                 # Exit the keep ordering question loop
                 break        
         else:
@@ -207,52 +207,58 @@ while place_order:
             print("Invalid input option please enter Y or N")
             
                 
+# if a customer exits with out adding a single order item then inform them accordingly 
+if len(cust_order)==0:
+    print("since no menu item were picked your order has not been created. Please visit us again.")
+else:
+    # Since the customer decided to stop ordering, thank them for
+    # their order
+    print("Thank you for ordering from the variety food truck.")        
+    # Print out the customer's order
+    print("This is what we are preparing for you.\n")
 
+    # Uncomment the following line to check the structure of the order
+    #print(order)
+    print("--------------------------+--------+----------")
+    print("Item name                 | Price  | Quantity ")
+    print("--------------------------+--------+----------")
 
-# Print out the customer's order
-print("This is what we are preparing for you.\n")
+    # 6. Loop through the items in the customer's order
+    for item in cust_order:
+        # 7. Store the dictionary items as variables
+        f_order_item_name=item[ITEMNAME]           
+        f_price=item[PRICE]
+        f_quantity=item[QUANTITY]
 
-# Uncomment the following line to check the structure of the order
-#print(order)
+        # 8. Calculate the number of spaces for formatted printing
+        # 9. Create space strings
+        #***Calculate spaces for left aligned 
+        num_item_name_spaces = 26 - len(f_order_item_name) 
+        item_name_spaces = " " * num_item_name_spaces
 
-print("Item name                 | Price  | Quantity")
-print("--------------------------|--------|----------")
+        #***Calculate spaces for right aligned 
+        num_item_price_spaces = 8 - len(str(f_price)) -2
+        item_price_spaces = " " * num_item_price_spaces
 
-# 6. Loop through the items in the customer's order
-for item in cust_order:
-    # 7. Store the dictionary items as variables
-    f_order_item_name=item[ITEMNAME]           
-    f_price=item[PRICE]
-    f_quantity=item[QUANTITY]
+        #***Calculate spaces for right aligned 
+        num_item_quantity_spaces = 10 - len(str(f_quantity)) -1
+        item_quantity_spaces = " " * num_item_quantity_spaces    
 
-    # 8. Calculate the number of spaces for formatted printing
-    # 9. Create space strings
-    #***Calculate spaces for left aligned 
-    num_item_name_spaces = 26 - len(f_order_item_name) 
-    item_name_spaces = " " * num_item_name_spaces
+        # 10. Print the item name, price, and quantity
+        print(f"{f_order_item_name}{item_name_spaces}|{item_price_spaces}${str(f_price)} |{item_quantity_spaces}{str(f_quantity)}")            
+                    
 
-    #***Calculate spaces for right aligned 
-    num_item_price_spaces = 8 - len(str(f_price)) -2
-    item_price_spaces = " " * num_item_price_spaces
+    # 11. Calculate the cost of the order using list comprehension
+    # Multiply the price by quantity for each item in the order list, then sum()
 
-    #***Calculate spaces for right aligned 
-    num_item_quantity_spaces = 10 - len(str(f_quantity)) -1
-    item_quantity_spaces = " " * num_item_quantity_spaces    
+    order_total = sum(float(oitem[PRICE]) * int(oitem[QUANTITY]) for oitem in cust_order)
 
-    # 10. Print the item name, price, and quantity
-    print(f"{f_order_item_name}{item_name_spaces}|{item_price_spaces}${str(f_price)} |{item_quantity_spaces}{str(f_quantity)}")            
-                
+    # and print the prices.
+    print("--------------------------+--------+----------")
+    str_tc="Total cost of the order:"
+    num_tc_spaces = 35 - len(str_tc) 
+    #*** right align order  total 
+    num_cost_spaces = 10 - len(str(order_total)) -2
 
-# 11. Calculate the cost of the order using list comprehension
-# Multiply the price by quantity for each item in the order list, then sum()
-
-order_total = sum(float(oitem[PRICE]) * int(oitem[QUANTITY]) for oitem in cust_order)
-
-# and print the prices.
-print("--------------------------|--------|----------")
-str_tc="Total cost of the order:"
-num_tc_spaces = 35 - len(str_tc) 
-#*** right align order  total 
-num_cost_spaces = 10 - len(str(order_total)) -2
-
-print(f"{str_tc}{' ' * num_tc_spaces}|{' ' * num_cost_spaces}${order_total}")
+    print(f"{str_tc}{' ' * num_tc_spaces}|{' ' * num_cost_spaces}${order_total}")
+    print("-----------------------------------+----------")
