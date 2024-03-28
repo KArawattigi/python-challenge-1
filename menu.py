@@ -89,7 +89,7 @@ while place_order:
         menu_items[i] = key        
         # Add 1 to the menu item number
         i += 1
-    print(menu.keys())
+    #print(menu.keys())
     
     # Get the customer's input
     menu_category = input("Type menu number: ")
@@ -113,6 +113,7 @@ while place_order:
             print("-------+--------------------------+-------")
             for key, value in menu[menu_category_name].items():
                 # Check if the menu item is a dictionary to handle differently
+            #***** Right aligned numbers ******
                 if type(value) is dict:
                     for key2, value2 in value.items():
                         num_item_spaces = 24 - len(key + key2) - 3
@@ -154,21 +155,25 @@ while place_order:
                         quantity=1
                     
                     # Add the item name, price, and quantity to the order list
-    # *** checking if the item exists? if it does then we update the quantity
+    
+            # *** checking if the item exists? if it does then we update the quantity *****
                     order_item_exists = False
                     for order_item in cust_order:
                         if order_item.get(ITEMNAME) == order_item_name:
                             # Item already exists, update the quantity
-                            old_order_quantity=order_item[QUANTITY]
+                            cur_order_quantity=order_item[QUANTITY]
                             order_item[QUANTITY] = int(order_item[QUANTITY]) + int(quantity)
                             order_item_exists = True
-                            print(f"Updated quantity for {order_item_name} from {old_order_quantity} to {order_item[QUANTITY]}")
+                            print(f"Updated quantity of {order_item_name} from {cur_order_quantity} to {order_item[QUANTITY]}")
                             break
 
                     if not order_item_exists:
                         # Item does not exist, add it to the cust_order list
                         cust_order.append({ITEMNAME: order_item_name, PRICE: order_item_price, QUANTITY: quantity})
-                        print(f"Added {quantity} items for {order_item_name}")
+                        #if quantity is greater than 1 print in plural 
+                        isCountPlural = 'count`s ' if int(quantity) > 1 else 'count'
+                        print(f'Added {quantity} { isCountPlural if "-" in order_item_name else ""}{order_item_name}{"`s" if (int(quantity) > 1 and "-" not in order_item_name) else ""}')
+
                 else:
                     # Tell the customer that their input isn't valid
                     print("** Invalid Menu item Selection")
@@ -187,24 +192,22 @@ while place_order:
     
     while True:
         # Ask the customer if they would like to order anything else
-        keep_ordering = input("Would you like to keep ordering? (Y)es or (N)o ")
+        keep_ordering = input("Would you like to keep ordering? (Y)es or (N)o ").upper()
 
         # 5. Check the customer's input
-        if keep_ordering.upper() in ["Y","N"]: 
+        match keep_ordering: 
             # Keep ordering
-            if keep_ordering.upper()=="Y":
+            case "Y":
                 break
-            elif keep_ordering.upper()=="N":
+            case "N":
                 # Exit the keep ordering question loop
-                # Complete the order
-                                
-                place_order=False            
-                
-                # Exit the keep ordering question loop
+                # Complete the order                                
+                #Exit the keep ordering question loop
+                place_order=False
                 break        
-        else:
-            # Tell the customer to try again
-            print("Invalid input option please enter Y or N")
+            case _:
+                # Tell the customer to try again
+                print("Invalid input option please enter Y or N")
             
                 
 # if a customer exits with out adding a single order item then inform them accordingly 
@@ -236,16 +239,9 @@ else:
         num_item_name_spaces = 26 - len(f_order_item_name) 
         item_name_spaces = " " * num_item_name_spaces
 
-        #***Calculate spaces for right aligned 
-        num_item_price_spaces = 8 - len(str(f_price)) -2
-        item_price_spaces = " " * num_item_price_spaces
-
-        #***Calculate spaces for right aligned 
-        num_item_quantity_spaces = 10 - len(str(f_quantity)) -1
-        item_quantity_spaces = " " * num_item_quantity_spaces    
-
+        #***Calculate spaces for numbers right aligned price and quantity 
         # 10. Print the item name, price, and quantity
-        print(f"{f_order_item_name}{item_name_spaces}|{item_price_spaces}${str(f_price)} |{item_quantity_spaces}{str(f_quantity)}")            
+        print(f"{f_order_item_name}{item_name_spaces}|{' ' * (6 - len(str(f_price))) }${str(f_price)} |{' ' * (9 - len(str(f_quantity))) }{str(f_quantity)}")            
                     
 
     # 11. Calculate the cost of the order using list comprehension
@@ -256,9 +252,7 @@ else:
     # and print the prices.
     print("--------------------------+--------+----------")
     str_tc="Total cost of the order:"
-    num_tc_spaces = 35 - len(str_tc) 
     #*** right align order  total 
-    num_cost_spaces = 10 - len(str(order_total)) -2
 
-    print(f"{str_tc}{' ' * num_tc_spaces}|{' ' * num_cost_spaces}${order_total}")
+    print(f"{str_tc}{' '*(35 - len(str_tc))}|{' ' * (8 - len(str(order_total)))}${str(order_total)}")
     print("-----------------------------------+----------")
